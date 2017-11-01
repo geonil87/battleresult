@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="storyboardcomment">
+
+<select id="all" parameterType="int" resultType="StoryBoardCommentDTO">
+<!-- select * from storycomment where board_idx=${idx} order by comment_group asc , indent asc -->
+select idx, board_idx, content, user_nick, user_id, wdate, comment_group, step, indent, available 
+ from story_comment natural join member where board_idx=#{idx} order by comment_group asc, indent asc, wdate asc
+</select>
+
+<insert id="insert" parameterType="StoryBoardCommentDTO" >
+insert into story_comment values(story_board_comment_seq.nextval, #{board_idx}, #{content}, #{user_id}, sysdate, story_board_Comment_Group_seq.nextval, 0, 0, 0)
+</insert>
+
+<update id="modify" parameterType="StoryBoardCommentDTO">
+update story_comment set content=#{content} where idx=#{idx}
+</update>
+
+<update id="delete" parameterType="int">
+update story_comment set available=1 where idx=#{idx}
+</update>
+
+<insert id="reinsert" parameterType="StoryBoardCommentDTO" >
+insert into story_comment values(story_board_Comment_seq.nextval, #{board_idx}, #{content}, #{user_id}, sysdate, #{comment_group}, 0, #{indent}, 0)
+</insert>
+
+<select id="commentcount" parameterType="int" resultType="int">
+ select count(idx) from story_comment where board_idx=#{idx}
+</select>
+
+
+</mapper>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD mapper 3.0//EN" "Http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="member">
+	<!-- ResultMap -->
+	<resultMap type="java.util.Map" id="loginResult">
+		<result column="user_id" property="userId"/>
+		<result column="user_pw" property="userPw"/>
+		<result column="user_nick" property="userNick"/>
+		<result column="user_permission" property="userPermission"/>
+	</resultMap>
+	
+	<resultMap type="java.util.Map" id="registResult">
+		<result column="user_id" property="userId"/>
+		<result column="user_nick" property="userNick"/>
+		<result column="user_name" property="userName"/>
+	</resultMap>
+	
+	<!-- 로그인 (login) -->
+	<!-- select -->
+	<select id="checkLoginInfo" parameterType="String" resultMap="loginResult">
+		select user_id,user_pw,user_nick,user_permission from member where user_id=#{user_id}
+	</select>	
+	
+	<!-- 회원가입(registration) -->
+	<!-- select -->
+	<select id="checkRegistInfo" parameterType="String" resultMap="registResult">
+		select user_id, user_nick, user_name from member where user_id=#{userId}
+	</select>
+	
+	<select id="checkRegistId" parameterType="String" resultType="int">
+    	select nvl(count(*),0) from member where user_id=#{userId}
+	</select>
+	
+	<select id="checkRegistNick" parameterType="String" resultType="int">
+    	select nvl(count(*),0) from member where user_nick=#{userNick}
+	</select>
+	
+	<select id="checkRegistEmail" parameterType="String" resultType="int">
+    	select nvl(count(*),0) from member where user_Email=#{userEmail}
+	</select>
+	
+	<!-- insert -->
+	<insert id="insertRegistInfo" parameterType="MemberDTO">
+		insert into member values(#{userId},#{userPw},#{userName},#{userNick},#{userPhone},#{userEmail},#{userPostcode},#{userAddress1},#{userAddress2},#{userGender},#{userBirthday},sysdate,${userPermission})
+	</insert>
+	
+	<!-- 아이디 찾기 -->	
+	<!-- select -->
+	<select id="findId" parameterType="String" resultType="String">
+		select user_id from member where user_email=#{userEmail}
+	</select>
+	
+	<!-- 비밀번호 찾기 -->
+	<select id="checkIdFindPw" parameterType="String" resultType="int">
+		select count(*) from member where user_id=#{userId}
+	</select>
+	
+	<update id="changePw" parameterType="java.util.Map">
+		UPDATE member
+		SET user_pw = #{userPw}
+		WHERE user_id=#{userId}
+	</update>
+	
+	<!-- 회원정보 수정 -->
+	<select id="checkPw" parameterType="String" resultType="String">
+		select user_pw from member where user_id=#{userId}
+	</select>
+	
+	<select id="getUserInfo" parameterType="String" resultType="MemberDTO">
+		select user_id as userId, user_pw as userPw, user_name as userName, user_nick as userNick, user_phone as userPhone, user_email as userEmail, user_postcode as userPostcode, user_address1 as userAddress1, user_address2 as userAddress2, user_gender as userGender, user_birthday as userBirthday from member where user_id=#{userId}
+	</select>
+	
+	<update id="setModifyUserInfo" parameterType="MemberDTO">
+		UPDATE member
+		SET 
+		user_pw = #{userPw},
+        user_phone = #{userPhone},
+        user_postcode = #{userPostcode},
+        user_address1 = #{userAddress1},
+        user_address2 = #{userAddress2},
+        user_gender = #{userGender}
+		WHERE user_id=#{userId}
+	</update>
+		
+	
+</mapper>
+
+
+
+

@@ -1,0 +1,9 @@
+.tab12{position:relative;height:33px;margin-top:25px;background:url(http://static.naver.com/groupware/common/tab_menu.gif) repeat-x 0 100%;font-family:'³ª´®°íµñ',dotum;font-size:12px}
+.tab12 ul,.tab12 ul li{margin:0;padding:0;}
+.tab12 ul li{list-style:none}
+.tab12 ul li,.tab12 ul li a{background:url(http://static.naver.com/groupware/2010/bg_tab2_off.gif) no-repeat}
+.tab12 ul li{float:left; margin-right:0px;line-height:26px}
+.tab12 ul li a{display:inline-block;padding:3px 27px 1px;_padding:3px 16px 0;background-position: 100% 0;font-weight:bold;color: #fff;background-color: #FE2E9A;;text-decoration:none !important}
+.tab12 ul li a:hover{color:#FE9A2E;}
+.tab12 ul li.on,.tab12 ul li.on a{background-image:url(http://static.naver.com/groupware/2010/bg_tab2_on.gif)}
+.tab12 ul li. a{color: #fff; background-color: #FE2E9A;} a:hover{color:#FE9A2E;}

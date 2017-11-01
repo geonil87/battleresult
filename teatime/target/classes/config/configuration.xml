@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org/DTD config 3.0//EN" "Http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<!-- 선택적인 항목 -->
+	<typeAliases>
+<typeAlias type="board.dto.StoryBoardDTO" alias="StoryBoardDTO" /> 
+		<typeAlias type="member.dto.MemberDTO" alias="MemberDTO" />
+<!-- 		<typeAlias type="board.dto.QaBoardDTO" alias="QaBoardDTO" />
+		<typeAlias type="admin.dto.AdminDTO" alias="AdminDTO"/>
+		<typeAlias type="admin.dto.DashBoardDTO" alias="DashDTO"/>-->
+		<typeAlias type="board.dto.StoryBoardCommentDTO" alias="StoryBoardCommentDTO"/>
+		<typeAlias type="board.dto.StoryBoardCommentRecommendDTO" alias="StoryBoardCommentRecommendDTO"/> 
+	</typeAliases>
+
+</configuration>

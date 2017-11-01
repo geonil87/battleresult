@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="storyboard">
+
+<select id="all" resultType="StoryBoardDTO" parameterType="int">
+select * from (select inner.*,rownum num from (select idx, title, content, m.user_nick, wdate, hit  from story_board s, member m 
+												where s.user_id = m.user_id order by s.wdate desc) inner) 
+where num between (#{pageNum}-1)*10+1 and #{pageNum}*10 
+</select>
+
+<select id="detail" resultType="StoryBoardDTO" parameterType="int">
+select idx ,title, content, m.user_nick, wdate, hit 
+from story_board s, member m 
+where s.user_id = m.user_id
+and idx=#{idx}
+</select> 
+
+
+<insert id="insert" parameterType="StoryBoardDTO" >
+insert into story_board values(story_board_seq.nextval, #{title}, #{content}, #{user_id}, sysdate,  0, 0)
+</insert>
+
+
+<update id="modify" parameterType="StoryBoardDTO">
+update story_board set title=#{title}, content=#{content} where idx=#{idx}
+</update>
+
+<delete  id="delete"  parameterType="int">
+delete story_board where idx=#{idx}
+</delete>
+
+<!-- 게시판 검색 sql  -->
+<select id="search" resultType="StoryBoardDTO" parameterType="java.util.Map">
+select * 
+from (select inner.*,rownum num 
+		from (select idx, title, content, m.user_nick, wdate, hit from story_board s , member m 
+where s.user_id = m.user_id
+order by wdate desc) inner
+<where>
+<if test="title!=null">
+	title like #{keyword}
+</if>
+<if test="content!=null">
+	content like #{keyword}
+</if>
+<if test="user_nick!=null">
+	user_nick like #{keyword}
+</if>
+<if test="all!=null">
+	title like #{keyword}
+	or content like #{keyword}
+	or user_nick like #{keyword}
+</if>
+</where>
+) 
+where num between (#{pageNum}-1)*10+1 and #{pageNum}*10 
+
+</select>
+
+<select id="searchPaging" resultType="int" parameterType="java.util.Map">
+select count(*) from (select idx, title, content, m.user_nick, wdate, hit from story_board s , member m where s.user_id = m.user_id) 
+<where>
+<if test="title!=null">
+	title like #{keyword}
+</if>
+<if test="content!=null">
+	content like #{keyword}
+</if>
+<if test="user_nick!=null">
+	user_nick like #{keyword}
+</if>
+<if test="all!=null">
+	title like #{keyword}
+	or content like #{keyword}
+	or user_nick like #{keyword}
+</if>
+</where>
+</select>
+
+<insert id="insertRecommend" parameterType="java.util.Map">
+	insert into <if test="tableName=='board'">story_recommend</if><if test="tableName=='comment'">story_comment_recommend</if> 
+	values(<if test="tableName=='board'">story_recommend_seq.nextval</if><if test="tableName=='comment'">story_comment_recommend_seq.nextval</if>, #{idx} ,#{user_id},<if test="good!=null">1</if><if test="good==null">0</if>,
+	<if test="bad!=null">1</if><if test="bad==null">0</if>)
+</insert>
+
+<update id="updateRecommend" parameterType="java.util.Map">
+update <if test="tableName=='board'">story_recommend</if><if test="tableName=='comment'">story_comment_recommend</if>
+set <if test="good!=null">good=1</if><if test="bad!=null">bad=1</if>
+where <if test="tableName=='board'">board_idx</if><if test="tableName=='comment'">comment_idx</if>=#{idx} and user_id=#{user_id}
+</update>
+
+<select id="checkRecommend" parameterType="java.util.Map" resultMap="RecommendResultMap">
+	select good,bad from <if test="tableName=='board'">story_recommend</if><if test="tableName=='comment'">story_comment_recommend</if> 
+	where <if test="tableName=='board'">board_idx</if><if test="tableName=='comment'">comment_idx</if>=#{idx} and user_id=#{user_id}
+</select>
+<select id="checkRecommend2" parameterType="java.util.Map" resultType="int">
+	select count(*) from <if test="tableName=='board'">story_recommend</if><if test="tableName=='comment'">story_comment_recommend</if> 
+	where <if test="tableName=='board'">board_idx</if><if test="tableName=='comment'">comment_idx</if>=#{idx} and user_id=#{user_id}
+</select>
+
+<resultMap type="java.util.Map" id="RecommendResultMap">
+<result column="good" property="good" javaType="int"/>
+<result column="bad" property="bad" javaType="int"/>
+</resultMap>
+
+<select id="selectRecommendGood" parameterType="java.util.Map" resultType="int">
+	select count(good) from <if test="tableName=='board'">story_recommend</if><if test="tableName=='comment'">story_comment_recommend</if>
+	where <if test="tableName=='board'">board_idx</if><if test="tableName=='comment'">comment_idx</if> = #{idx} and good=1
+</select>
+<select id="selectRecommendBad" parameterType="java.util.Map" resultType="int">
+	select count(bad) from <if test="tableName=='board'">story_recommend</if><if test="tableName=='comment'">story_comment_recommend</if> 
+	where <if test="tableName=='board'">board_idx</if><if test="tableName=='comment'">comment_idx</if> = #{idx} and bad=1
+</select>
+
+<!-- 게시글 신고  -->
+<insert id="insertReport" parameterType="java.util.Map">
+	insert into <if test="tableName=='board'">story_report</if><if test="tableName=='comment'">story_comment_report</if> 
+	values(<if test="tableName=='board'">story_report_seq.nextval</if><if test="tableName=='comment'">story_comment_report_seq.nextval</if>,#{idx},#{content},#{user_id},sysdate)
+</insert>
+
+<select id="checkReport" parameterType="java.util.Map" resultType="int">
+	select count(*) from <if test="tableName=='board'">story_report</if><if test="tableName=='comment'">story_comment_report</if> 
+	where <if test="tableName=='board'">board_idx</if><if test="tableName=='comment'">comment_idx</if>  = #{idx} and user_id = #{user_id}
+</select>
+
+<select id="selectCommentIdx" parameterType="java.util.Map" resultType="int">
+select c.idx from story_board b,story_comment c 
+where b.idx = c.board_idx
+and board_idx = #{idx}
+order by comment_group asc, indent asc, c.wdate asc
+</select>
+
+<select id="checkWriter" parameterType="int" resultType="String">
+	select user_id from story_board where idx = #{idx}
+</select>
+</mapper>
